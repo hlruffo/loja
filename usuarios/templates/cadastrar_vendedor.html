@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block 'body' %} 
+    <div class="container">
+        <form action="{% url 'cadastrar_vendedor' %}" method="POST">
+            {% csrf_token %}
+            <label class="mt-4">E-mail</label>
+            <input type="email" placeholder="Digite o seu email" name="email" class="form-control">
+            <label class="mt-2">Senha</label>
+            <input type="password" placeholder="Digite sua senha" name="senha" class="form-control">
+            <input type="submit" class="btn btn-success mt-2">
+            
+        </form>
+    </div> 
+{% endblock 'body' %}
