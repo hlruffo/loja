@@ -1,11 +1,14 @@
+import sys
 from datetime import date
 from io import BytesIO
 
+from django.contrib import messages
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from PIL import Image, ImageDraw
-import sys
+
 from .models import Categoria, Imagem, Produto
 
 
@@ -13,7 +16,9 @@ from .models import Categoria, Imagem, Produto
 def add_produto(request):
     if request.method == "GET":
         categoria = Categoria.objects.all()
-        return render(request, 'add_produto.html', {'categoria': categoria})
+        produtos = Produto.objects.all()
+
+        return render(request, 'add_produto.html', {'categoria': categoria, 'produtos': produtos})
     elif request.method == "POST":
         nome = request.POST.get('nome')
         categoria = request.POST.get('categoria')
@@ -46,16 +51,19 @@ def add_produto(request):
             # retorna o ponteiro para o começo do arquivo da imagem NECESSARIO
             output.seek(0)
             img_final = InMemoryUploadedFile(  # converte usando o InMemoryUploadedFiel
-                        output,
-                        'ImageField',
-                        name,
-                        'image/jpeg',
-                        sys.getsizeof(output),
-                        None
+                output,
+                'ImageField',
+                name,
+                'image/jpeg',
+                sys.getsizeof(output),
+                None
             )
             img_dj = Imagem(
                 imagem=img_final,
                 produto=produto
             )
             img_dj.save()
-        return HttpResponse("OK")
+        messages.add_message(request, messages.SUCCESS,
+                             'Produto adicionado com sucesso')
+        # reverse usa o name do url definido no path
+        return redirect(reverse('add_produto'))

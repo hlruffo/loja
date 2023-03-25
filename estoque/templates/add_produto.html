@@ -1,18 +1,26 @@
 {% extends 'base.html' %}
+{% load filters %}
+
+
 {% block 'body' %}
 <div class="container mt-5">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{message.tags}}">{{message}}</div>
+        {% endfor %}
+    {% endif %}
     <form action="{% url 'add_produto' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <label>Imagens:</label>
-        <input type="file" name="imagens" multiple>
+        <input class="form-control" type="file" name="imagens" multiple>
         <br>
         <br>
         <label>Nome:</label>
-        <input type="text" name="nome">
+        <input class="form-control" type="text" name="nome">
         <br>
         <br>
         <label>Selecione a categoria do produto</label>
-        <select name="categoria">
+        <select class= "form-control" name="categoria">
             {% for categoria in  categoria %}
             <option value="{{categoria.id}}">{{categoria.titulo}}</option>
             {% endfor %}
@@ -20,22 +28,41 @@
         <br>
         <br>
         <label>Estoque Inicial:</label>
-        <input type="number" name="quantidade">
+        <input class="form-control" type="number" name="quantidade">
         <br>
         <br>
         <label>Preço de compra:</label>
-        <input type="number" name="preco_compra">
+        <input class="form-control" type="number" name="preco_compra">
         <br>
         <br>
         <label>Preço de venda:</label>
-        <input type="number" name="preco_venda">
+        <input class="form-control" type="number" name="preco_venda">
         <br>
         <br>
         
-        <input type="submit" value="Enviar">
+        <input class="btn btn-success" type="submit" value="Enviar">
         
 
     </form>
+    <hr style='background-color:gray;'>
+    <div class="listar_produtos d-inline-flex flex-row justify-content-around flex-wrap">
+        {% for produto in produtos  %}
+        <div class="card mt-3 mb-4 " style="width: 18rem;background-color:#808080 ;">
+            {% if produto|get_first_image %}
+            <img width="100%" class="card-img-top" src="{{produto|get_first_image}}"> <!--passa produto como parametro de uma função que retorna a imagem-->
+            
+            {% endif %}
+            <div class="card-body flex-row justify-content-around">
+                <h5 class="card-title">{{produto.nome}}</h5>
+                <p class="badge badge-light">{{produto.categoria}}.</p><br>
+                <a href="#" class="btn btn-light">Acesse</a>
+            </div>
+        </div>
+        
+        {% endfor %}
+    </div>
+
+
 </div>
 
 {% endblock 'body' %}
